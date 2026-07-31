@@ -47,7 +47,7 @@ export function Navbar() {
 
         {user ? (
           <div className="flex items-center gap-3">
-            <span className="text-sm text-secondary">{user.email}</span>
+            <span className="text-sm text-secondary">{user.email?.split('@')[0]}</span>
             <button onClick={handleSignOut} className="btn btn-secondary btn-sm">
               Sign Out
             </button>

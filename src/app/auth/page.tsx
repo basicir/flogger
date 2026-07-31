@@ -10,7 +10,7 @@ function AuthForm() {
   const [tab, setTab] = useState<'login' | 'register'>(
     searchParams.get('tab') === 'register' ? 'register' : 'login'
   )
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -29,10 +29,12 @@ function AuthForm() {
     setError(''); setSuccess('')
     setLoading(true)
 
+    const virtualEmail = `${username.trim().toLowerCase()}@flogger.local`
+
     try {
       if (tab === 'register') {
         const { data, error } = await supabase.auth.signUp({
-          email,
+          email: virtualEmail,
           password,
           options: { data: { display_name: displayName } },
         })
@@ -41,14 +43,14 @@ function AuthForm() {
           // upsert profile
           await supabase.from('profiles').upsert({
             id: data.user.id,
-            email,
+            email: virtualEmail,
             display_name: displayName,
           })
           setSuccess('Account created! Redirecting...')
           setTimeout(() => router.push('/settings'), 1500)
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { error } = await supabase.auth.signInWithPassword({ email: virtualEmail, password })
         if (error) throw error
         router.push('/dashboard')
         router.refresh()
@@ -144,13 +146,13 @@ function AuthForm() {
               )}
 
               <div className="form-group">
-                <label className="form-label">Email</label>
+                <label className="form-label">Username</label>
                 <input
                   className="form-input"
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="john@example.com"
+                  type="text"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  placeholder="john"
                   required
                 />
               </div>
