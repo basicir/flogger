@@ -60,9 +60,18 @@ export default function StudentDetailPage() {
   const fetchData = useCallback(async () => {
     setLoading(true); setError('')
     try {
-      const custData = await flQuery<{ customers: Customer[] }>(Q_CUSTOMERS, { callsign })
-      const cust = custData.customers?.[0]
-      if (!cust) { setError('Student not found in FlightLogger.'); setLoading(false); return }
+      const custData = await flQuery<{ users: { nodes: { id: string; callSign: string; name: string; email?: string }[] } }>(
+        Q_CUSTOMERS,
+        { callSign: callsign }
+      )
+      const firstNode = custData.users?.nodes?.[0]
+      if (!firstNode) { setError('Student not found in FlightLogger.'); setLoading(false); return }
+      const cust: Customer = {
+        id: firstNode.id,
+        callsign: firstNode.callSign ?? '',
+        name: firstNode.name,
+        email: firstNode.email
+      }
       setCustomer(cust)
 
       const [flightData, bookingData] = await Promise.all([

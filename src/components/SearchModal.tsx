@@ -33,8 +33,17 @@ export function SearchModal({ onClose, onPinned, pinnedCallsigns }: Props) {
     const t = setTimeout(async () => {
       setLoading(true); setError('')
       try {
-        const data = await flQuery<{ customers: Customer[] }>(Q_CUSTOMERS, { callsign: query })
-        setResults(data.customers ?? [])
+        const data = await flQuery<{ users: { nodes: { id: string; callSign: string; name: string; email?: string }[] } }>(
+          Q_CUSTOMERS,
+          { callSign: query }
+        )
+        const mapped = (data.users?.nodes ?? []).map(u => ({
+          id: u.id,
+          callsign: u.callSign ?? '',
+          name: u.name,
+          email: u.email
+        }))
+        setResults(mapped)
       } catch (err: unknown) {
         setError((err as Error).message)
       } finally {

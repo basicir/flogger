@@ -20,21 +20,23 @@ export async function flQuery<T = unknown>(
 
 export const Q_ACCOUNT = `
   query {
-    account {
-      id
-      name
-      callsign
+    myFlightLogger {
+      firstName
+      lastName
+      callSign
     }
   }
 `
 
 export const Q_CUSTOMERS = `
-  query SearchCustomers($callsign: String) {
-    customers(callsign: $callsign) {
-      id
-      callsign
-      name
-      email
+  query SearchUsers($callSign: String) {
+    users(callSign: $callSign) {
+      nodes {
+        id
+        callSign
+        name
+        email
+      }
     }
   }
 `

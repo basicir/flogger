@@ -60,10 +60,11 @@ export default function SettingsPage() {
       body: JSON.stringify({ flightlogger_api_key: apiKey }),
     })
     try {
-      const data = await flQuery<{ account: { name: string; callsign: string } }>(Q_ACCOUNT)
+      const data = await flQuery<{ myFlightLogger: { firstName: string; lastName: string; callSign: string } }>(Q_ACCOUNT)
+      const name = data.myFlightLogger ? `${data.myFlightLogger.firstName} ${data.myFlightLogger.lastName}`.trim() : 'unknown'
       setTestResult({
         ok: true,
-        message: `✓ Connected as ${data.account?.name ?? 'unknown'} (${data.account?.callsign ?? ''})`,
+        message: `✓ Connected as ${name} (${data.myFlightLogger?.callSign ?? ''})`,
       })
     } catch (err: unknown) {
       setTestResult({ ok: false, message: (err as Error).message })
