@@ -20,10 +20,8 @@ export async function flQuery<T = unknown>(
 
 export const Q_ACCOUNT = `
   query {
-    myFlightLogger {
-      firstName
-      lastName
-      callSign
+    account {
+      company
     }
   }
 `
