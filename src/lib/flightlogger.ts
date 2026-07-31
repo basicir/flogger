@@ -9,7 +9,7 @@ export async function flightloggerQuery<T = unknown>(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Token ${apiKey}`,
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({ query, variables }),
   })
