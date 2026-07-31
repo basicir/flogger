@@ -23,11 +23,10 @@ interface Flight {
 }
 interface Booking {
   id: string
-  startAt: string
-  endAt: string
-  kind: string
-  status: string
-  aircraftRegistration?: string
+  startsAt?: string
+  endsAt?: string
+  status?: string
+  comment?: string
 }
 
 function formatHours(minutes: number): string {
@@ -77,11 +76,11 @@ export default function StudentDetailPage() {
       setCustomer(cust)
 
       const [flightData, bookingData] = await Promise.all([
-        flQuery<{ flights: Flight[] }>(Q_FLIGHTS, { userId: cust.id }),
-        flQuery<{ bookings: Booking[] }>(Q_BOOKINGS, { userId: cust.id }),
+        flQuery<{ user?: { flights?: { nodes: Flight[] } } }>(Q_FLIGHTS, { userId: cust.id }),
+        flQuery<{ bookings?: { nodes: Booking[] } }>(Q_BOOKINGS),
       ])
-      setFlights(flightData.flights ?? [])
-      setBookings(bookingData.bookings ?? [])
+      setFlights(flightData.user?.flights?.nodes ?? [])
+      setBookings(bookingData.bookings?.nodes ?? [])
     } catch (err: unknown) {
       setError((err as Error).message)
     } finally {
@@ -257,8 +256,7 @@ export default function StudentDetailPage() {
                       <tr>
                         <th>Date</th>
                         <th>Time</th>
-                        <th>Type</th>
-                        <th>Aircraft</th>
+                        <th>Comment / Note</th>
                         <th>Status</th>
                       </tr>
                     </thead>
@@ -266,18 +264,17 @@ export default function StudentDetailPage() {
                       {bookings.map(b => (
                         <tr key={b.id}>
                           <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
-                            {new Date(b.startAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            {b.startsAt ? new Date(b.startsAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                           </td>
                           <td>
-                            {new Date(b.startAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                            {b.startsAt ? new Date(b.startsAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '—'}
                             {' – '}
-                            {new Date(b.endAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                            {b.endsAt ? new Date(b.endsAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '—'}
                           </td>
-                          <td style={{ textTransform: 'capitalize' }}>{b.kind?.replace(/_/g, ' ') ?? '—'}</td>
-                          <td className="mono">{b.aircraftRegistration ?? '—'}</td>
+                          <td>{b.comment || 'Booking'}</td>
                           <td>
-                            <span className={`badge ${statusBadge(b.status)}`}>
-                              {b.status}
+                            <span className={`badge ${statusBadge(b.status ?? '')}`}>
+                              {b.status ?? 'UNKNOWN'}
                             </span>
                           </td>
                         </tr>

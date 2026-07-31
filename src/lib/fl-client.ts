@@ -59,34 +59,41 @@ export const Q_STUDENT = `
 `
 
 export const Q_FLIGHTS = `
-  query GetFlights($userId: ID, $page: Int) {
-    flights(userId: $userId, page: $page) {
-      id
-      date
-      aircraftRegistration
-      departureName
-      arrivalName
-      totalTime
-      picTime
-      dualTime
-      soloTime
-      nightTime
-      ifrTime
-      instructorName
-      remarks
+  query GetUserFlights($userId: String!) {
+    user(id: $userId) {
+      flights(first: 250) {
+        nodes {
+          id
+          date
+          aircraftRegistration
+          departureName
+          arrivalName
+          totalTime
+          picTime
+          dualTime
+          soloTime
+          nightTime
+          ifrTime
+          instructorName
+          remarks
+        }
+      }
     }
   }
 `
 
 export const Q_BOOKINGS = `
-  query GetBookings($userId: ID) {
-    bookings(userId: $userId) {
-      id
-      startAt
-      endAt
-      kind
-      status
-      aircraftRegistration
+  query GetBookings {
+    bookings(first: 100) {
+      nodes {
+        ... on Booking {
+          id
+          startsAt
+          endsAt
+          status
+          comment
+        }
+      }
     }
   }
 `

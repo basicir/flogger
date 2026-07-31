@@ -36,8 +36,8 @@ export function StudentCard({ callsign, displayName, flightloggerId, onUnpin }: 
     if (!flightloggerId) { setLoading(false); return }
     try {
       setLoading(true); setError('')
-      const data = await flQuery<{ flights: Flight[] }>(Q_FLIGHTS, { userId: flightloggerId })
-      setFlights(data.flights ?? [])
+      const data = await flQuery<{ user?: { flights?: { nodes: Flight[] } } }>(Q_FLIGHTS, { userId: flightloggerId })
+      setFlights(data.user?.flights?.nodes ?? [])
     } catch (err: unknown) {
       setError((err as Error).message)
     } finally {
