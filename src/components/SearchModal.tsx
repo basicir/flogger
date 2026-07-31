@@ -33,14 +33,14 @@ export function SearchModal({ onClose, onPinned, pinnedCallsigns }: Props) {
     const t = setTimeout(async () => {
       setLoading(true); setError('')
       try {
-        const data = await flQuery<{ users: { nodes: { id: string; callSign: string; name: string; email?: string }[] } }>(
+        const data = await flQuery<{ users: { nodes: { id: string; callSign: string; firstName: string; lastName: string; email?: string }[] } }>(
           Q_CUSTOMERS,
           { callSign: query }
         )
         const mapped = (data.users?.nodes ?? []).map(u => ({
           id: u.id,
           callsign: u.callSign ?? '',
-          name: u.name,
+          name: `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || 'Unknown',
           email: u.email
         }))
         setResults(mapped)

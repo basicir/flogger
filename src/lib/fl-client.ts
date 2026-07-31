@@ -32,7 +32,8 @@ export const Q_CUSTOMERS = `
       nodes {
         id
         callSign
-        name
+        firstName
+        lastName
         email
       }
     }
