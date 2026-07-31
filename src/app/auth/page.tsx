@@ -29,7 +29,7 @@ function AuthForm() {
     setError(''); setSuccess('')
     setLoading(true)
 
-    const virtualEmail = `${username.trim().toLowerCase()}@flogger.local`
+    const virtualEmail = `${username.trim().toLowerCase()}@flogger.com`
 
     try {
       if (tab === 'register') {
