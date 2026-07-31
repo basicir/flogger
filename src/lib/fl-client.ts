@@ -34,7 +34,9 @@ export const Q_CUSTOMERS = `
         callSign
         firstName
         lastName
-        email
+        contact {
+          email
+        }
       }
     }
   }

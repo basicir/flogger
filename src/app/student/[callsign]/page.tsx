@@ -60,7 +60,7 @@ export default function StudentDetailPage() {
   const fetchData = useCallback(async () => {
     setLoading(true); setError('')
     try {
-      const custData = await flQuery<{ users: { nodes: { id: string; callSign: string; firstName: string; lastName: string; email?: string }[] } }>(
+      const custData = await flQuery<{ users: { nodes: { id: string; callSign: string; firstName: string; lastName: string; contact?: { email?: string } }[] } }>(
         Q_CUSTOMERS,
         { callSign: callsign }
       )
@@ -70,7 +70,7 @@ export default function StudentDetailPage() {
         id: firstNode.id,
         callsign: firstNode.callSign ?? '',
         name: `${firstNode.firstName ?? ''} ${firstNode.lastName ?? ''}`.trim() || 'Unknown',
-        email: firstNode.email
+        email: firstNode.contact?.email
       }
       setCustomer(cust)
 
