@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { flQuery, Q_CUSTOMERS, Q_FLIGHTS, Q_BOOKINGS } from '@/lib/fl-client'
+import { flQuery, Q_STUDENT, Q_FLIGHTS, Q_BOOKINGS } from '@/lib/fl-client'
 import { createClient } from '@/lib/supabase/client'
 
 interface Customer { id: string; callsign: string; name: string; email?: string }
@@ -61,10 +61,12 @@ export default function StudentDetailPage() {
     setLoading(true); setError('')
     try {
       const custData = await flQuery<{ users: { nodes: { id: string; callSign: string; firstName: string; lastName: string; contact?: { email?: string } }[] } }>(
-        Q_CUSTOMERS,
+        Q_STUDENT,
         { callSign: callsign }
       )
-      const firstNode = custData.users?.nodes?.[0]
+      const firstNode = (custData.users?.nodes ?? []).find(
+        u => u.callSign?.toLowerCase() === callsign.toLowerCase()
+      )
       if (!firstNode) { setError('Student not found in FlightLogger.'); setLoading(false); return }
       const cust: Customer = {
         id: firstNode.id,

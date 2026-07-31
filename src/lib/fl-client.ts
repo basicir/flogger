@@ -42,6 +42,22 @@ export const Q_CUSTOMERS = `
   }
 `
 
+export const Q_STUDENT = `
+  query GetStudent($callSign: String!) {
+    users(callSign: $callSign) {
+      nodes {
+        id
+        callSign
+        firstName
+        lastName
+        contact {
+          email
+        }
+      }
+    }
+  }
+`
+
 export const Q_FLIGHTS = `
   query GetFlights($userId: ID, $page: Int) {
     flights(userId: $userId, page: $page) {
