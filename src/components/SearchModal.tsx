@@ -24,34 +24,44 @@ export function SearchModal({ onClose, onPinned, pinnedCallsigns }: Props) {
   const [pinning, setPinning] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
+  const [students, setStudents] = useState<Customer[]>([])
 
   useEffect(() => {
-    if (!query.trim()) { setResults([]); return }
-    const t = setTimeout(async () => {
+    inputRef.current?.focus()
+
+    const loadStudents = async () => {
       setLoading(true); setError('')
       try {
-        const data = await flQuery<{ users: { nodes: { id: string; callSign: string; firstName: string; lastName: string; email?: string }[] } }>(
-          Q_CUSTOMERS,
-          { callSign: query }
-        )
+        const data = await flQuery<{ users: { nodes: { id: string; callSign: string; firstName: string; lastName: string; email?: string }[] } }>(Q_CUSTOMERS)
         const mapped = (data.users?.nodes ?? []).map(u => ({
           id: u.id,
           callsign: u.callSign ?? '',
           name: `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || 'Unknown',
           email: u.email
         }))
+        setStudents(mapped)
         setResults(mapped)
       } catch (err: unknown) {
         setError((err as Error).message)
       } finally {
         setLoading(false)
       }
-    }, 400)
-    return () => clearTimeout(t)
-  }, [query])
+    }
+    loadStudents()
+  }, [])
+
+  useEffect(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) {
+      setResults(students)
+      return
+    }
+    const filtered = students.filter(s =>
+      s.callsign.toLowerCase().includes(q) ||
+      s.name.toLowerCase().includes(q)
+    )
+    setResults(filtered)
+  }, [query, students])
 
   const handlePin = async (customer: Customer) => {
     setPinning(customer.callsign)
@@ -118,17 +128,14 @@ export function SearchModal({ onClose, onPinned, pinnedCallsigns }: Props) {
 
             {error && <div className="alert alert-error">{error}</div>}
 
-            {!loading && !error && results.length === 0 && query && (
+            {!loading && !error && results.length === 0 && (
               <div style={{ textAlign: 'center', padding: '48px 0' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: 8, opacity: 0.4 }}>🔍</div>
-                <p>No students found for &quot;{query}&quot;</p>
-              </div>
-            )}
-
-            {!loading && !query && (
-              <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                <div style={{ fontSize: '2.5rem', marginBottom: 8, opacity: 0.4 }}>✈</div>
-                <p>Type a callsign to search</p>
+                <p>
+                  {query
+                    ? `No students found for "${query}"`
+                    : 'No students found on this FlightLogger account.'}
+                </p>
               </div>
             )}
 

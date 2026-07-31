@@ -27,8 +27,8 @@ export const Q_ACCOUNT = `
 `
 
 export const Q_CUSTOMERS = `
-  query SearchUsers($callSign: String) {
-    users(callSign: $callSign) {
+  query GetStudents {
+    users(roles: [STUDENT], first: 250) {
       nodes {
         id
         callSign
